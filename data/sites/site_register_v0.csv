@@ -1,0 +1,17 @@
+site_id,name,category,region,lat,lon,coord_confidence,coord_note
+S01,Mansourah-Massarah Gold Mine,Mining,Riyadh Province,22.00,43.70,low,Central Arabian Gold Region ~450km SW of Riyadh - verify vs mining cadastre
+S02,Ad Duwayhi Gold Mine,Mining,Riyadh Province,22.30,42.90,low,Central Arabian Gold Region east of Zalim - verify vs mining cadastre
+S03,Jabal Sayid Copper Mine,Mining,Madinah Province,23.85,40.95,medium,~120km SE of Madinah
+S04,Al Jalamid Phosphate Mine,Mining,Northern Borders,31.30,40.00,medium,Maaden phosphate site
+S05,Waad Al Shamal Mining City,Mining/Industrial,Northern Borders,31.68,38.65,high,adjacent to Turaif
+S06,Ras Al Khair Industrial City,Industrial,Eastern Province,27.55,49.20,high,coastal north of Jubail
+S07,Jubail Industrial City,Industrial,Eastern Province,27.00,49.66,high,
+S08,Yanbu Industrial City,Industrial,Madinah Province,24.09,38.06,high,
+S09,NEOM Region,Industrial/Remote,Tabuk Province,28.00,35.20,medium,proxy point near Sharma coast - NEOM is a region not a point
+S10,Jazan Economic City,Industrial,Jazan Province,17.30,42.35,medium,Jazan City for Primary and Downstream Industries near Baish
+S11,Duba Desalination Site,Desalination,Tabuk Province,27.35,35.70,high,
+S12,Al Wajh Coastal Town,Remote/Desalination,Tabuk Province,26.24,36.45,high,
+S13,Sharurah Remote Town,Remote,Najran Province,17.47,47.11,high,
+S14,Al Qurayyat Remote Town,Remote,Al Jawf Province,31.33,37.34,high,
+S15,Farasan Islands,Remote/Desalination,Jazan Province,16.70,42.12,high,
+S16,Shaybah Industrial Complex,Industrial/Remote,Eastern Province,22.51,53.97,high,Empty Quarter oil/gas complex

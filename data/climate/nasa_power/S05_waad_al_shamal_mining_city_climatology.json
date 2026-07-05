@@ -1,0 +1,133 @@
+{
+ "type": "Feature",
+ "geometry": {
+  "type": "Point",
+  "coordinates": [
+   38.65,
+   31.68,
+   819.72
+  ]
+ },
+ "properties": {
+  "parameter": {
+   "RH2M": {
+    "JAN": 58.55,
+    "FEB": 51.94,
+    "MAR": 41.57,
+    "APR": 33.44,
+    "MAY": 26.35,
+    "JUN": 22.0,
+    "JUL": 22.21,
+    "AUG": 23.17,
+    "SEP": 24.9,
+    "OCT": 31.8,
+    "NOV": 46.47,
+    "DEC": 55.1,
+    "ANN": 36.39
+   },
+   "T2M": {
+    "JAN": 6.95,
+    "FEB": 9.22,
+    "MAR": 13.81,
+    "APR": 18.64,
+    "MAY": 24.15,
+    "JUN": 28.19,
+    "JUL": 30.37,
+    "AUG": 30.36,
+    "SEP": 27.43,
+    "OCT": 22.32,
+    "NOV": 14.12,
+    "DEC": 8.87,
+    "ANN": 19.59
+   },
+   "T2M_MAX": {
+    "JAN": 24.15,
+    "FEB": 28.29,
+    "MAR": 34.28,
+    "APR": 37.66,
+    "MAY": 40.88,
+    "JUN": 43.79,
+    "JUL": 46.0,
+    "AUG": 45.05,
+    "SEP": 43.58,
+    "OCT": 39.01,
+    "NOV": 30.95,
+    "DEC": 27.8,
+    "ANN": 46.0
+   },
+   "T2M_MIN": {
+    "JAN": -6.38,
+    "FEB": -6.79,
+    "MAR": -3.83,
+    "APR": 2.47,
+    "MAY": 5.8,
+    "JUN": 12.55,
+    "JUL": 16.56,
+    "AUG": 16.62,
+    "SEP": 12.62,
+    "OCT": 5.71,
+    "NOV": -3.79,
+    "DEC": -5.65,
+    "ANN": -6.79
+   },
+   "WS2M": {
+    "JAN": 2.97,
+    "FEB": 3.17,
+    "MAR": 3.34,
+    "APR": 3.42,
+    "MAY": 3.38,
+    "JUN": 3.49,
+    "JUL": 3.42,
+    "AUG": 3.17,
+    "SEP": 2.76,
+    "OCT": 2.7,
+    "NOV": 2.72,
+    "DEC": 2.7,
+    "ANN": 3.1
+   }
+  }
+ },
+ "header": {
+  "title": "NASA/POWER Source Native Resolution Climatology Climatologies",
+  "api": {
+   "version": "v2.9.7",
+   "name": "POWER Climatology API"
+  },
+  "sources": [
+   "MERRA2",
+   "POWER"
+  ],
+  "fill_value": -999.0,
+  "time_standard": "LST",
+  "range": "20-year Meteorological and Solar Monthly & Annual Climatologies (January 2001 - December 2020)"
+ },
+ "messages": [
+  "The requested parameters are retrieved from a pre-computed climatological period (January 2001 - December 2020)"
+ ],
+ "parameters": {
+  "RH2M": {
+   "units": "%",
+   "longname": "Relative Humidity at 2 Meters"
+  },
+  "T2M": {
+   "units": "C",
+   "longname": "Temperature at 2 Meters"
+  },
+  "T2M_MAX": {
+   "units": "C",
+   "longname": "Temperature at 2 Meters Maximum"
+  },
+  "T2M_MIN": {
+   "units": "C",
+   "longname": "Temperature at 2 Meters Minimum"
+  },
+  "WS2M": {
+   "units": "m/s",
+   "longname": "Wind Speed at 2 Meters"
+  }
+ },
+ "times": {
+  "data": 0.296,
+  "process": 0.03
+ }
+}

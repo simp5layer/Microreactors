@@ -1,0 +1,24 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+
+# Large downloaded data — regenerable via data/*/SOURCES.md (do not commit)
+# 9 GB ENDF/B-VIII.1 cross sections
+data/nuclear_benchmarks/openmc_xs/
+# KRUSTY sparse clone (has its own .git)
+data/nuclear_benchmarks/virtual_test_bed/
+# Aqueduct 4.0 (256 MB)
+data/water/*.zip
+# OSM GCC extract (240 MB)
+data/grid/*.osm.pbf
+# WorldPop rasters
+data/population/*.tif
+# IAEA ARIS catalogue (10 MB)
+data/evinci_docs/*.pdf
+# SWCC report (17 MB)
+data/economics/*.pdf
+
+# OS / editor
+.DS_Store
+*.swp
