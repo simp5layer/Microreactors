@@ -1,0 +1,121 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Carve the finned tube out of the background box, snap to features, add       |
+| boundary layers on the tube+fin walls targeting y+ <= 2.                     |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      snappyHexMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+castellatedMesh true;
+snap            true;
+addLayers       true;
+
+geometry
+{
+    tube.stl
+    {
+        type triSurfaceMesh;
+        name tube;
+    }
+}
+
+castellatedMeshControls
+{
+    maxLocalCells       2000000;
+    maxGlobalCells      4000000;
+    minRefinementCells  10;
+    maxLoadUnbalance    0.10;
+    nCellsBetweenLevels 2;                 // thinner refinement buffer (mesh size)
+
+    features
+    (
+        { file "tube.eMesh"; level 3; }   // ~0.16mm at fin edges/tips
+    );
+
+    refinementSurfaces
+    {
+        tube
+        {
+            level (2 3);                  // 0.16-0.32mm on the general surface
+            // Gap refinement resolves the thin 0.5mm fins (tip+faces) with >=4
+            // cells across -> drives them to level 4 (~0.08mm). Without this the
+            // fin tips sit on 0.32mm bare cells and hit y+ ~7 at the shoulders.
+            gapLevel (4 1 4);
+            patchInfo { type wall; }
+        }
+    }
+
+    resolveFeatureAngle 30;
+
+    refinementRegions
+    {
+    }
+
+    // Firmly in the air, a domain corner well outside the finned envelope
+    // (r_f = 0.0247 m); |(0.023,0.020)| = 0.0305 m > r_f.
+    locationInMesh (0.023 0.020 0.0005);
+
+    allowFreeStandingZoneFaces true;
+}
+
+snapControls
+{
+    nSmoothPatch            3;
+    tolerance               2.0;
+    nSolveIter              50;
+    nRelaxIter              5;
+    nFeatureSnapIter        15;
+    implicitFeatureSnap     false;
+    explicitFeatureSnap     true;
+    multiRegionFeatureSnap  false;
+}
+
+addLayersControls
+{
+    relativeSizes       true;
+    layers
+    {
+        tube
+        {
+            nSurfaceLayers 8;
+        }
+    }
+    expansionRatio      1.2;
+    finalLayerThickness 0.3;         // thinner 1st cell (~24um) -> more y+ margin
+    minThickness        0.008;       // let thin layers survive in tight spots
+    nGrow               0;
+
+    featureAngle            170;     // wrap layers around convex fin edges/tips
+    slipFeatureAngle        30;
+    nRelaxIter              5;
+    nSmoothSurfaceNormals   2;
+    nSmoothNormals          5;
+    nSmoothThickness        10;
+    maxFaceThicknessRatio   0.5;
+    maxThicknessToMedialRatio 0.6;   // allow layers where medial distance is small
+    minMedialAxisAngle      90;
+    nBufferCellsNoExtrude   0;
+    nLayerIter              50;
+    nRelaxedIter            20;
+}
+
+meshQualityControls
+{
+    #include "meshQualityDict"
+}
+
+writeFlags
+(
+    scalarLevels
+    layerSets
+    layerFields
+);
+
+mergeTolerance 1e-6;
+
+// ************************************************************************* //

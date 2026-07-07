@@ -1,0 +1,17 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Domain decomposition for the parallel rhoSimpleFoam solve (10 cores).         |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      decomposeParDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+numberOfSubdomains  10;
+
+method              scotch;
+
+// ************************************************************************* //

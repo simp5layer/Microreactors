@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Turbulent kinetic energy. Inlet I = 5%, L = 0.1 d0.                          |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      k;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 2 -2 0 0 0 0];
+
+internalField   uniform 0.1518;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 0.1518;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 0.1518;
+        value           uniform 0.1518;
+    }
+    tube
+    {
+        type            kqRWallFunction;
+        value           uniform 0.1518;
+    }
+    "cyclic.*"
+    {
+        type            cyclic;
+    }
+    "symZ.*"
+    {
+        type            symmetryPlane;
+    }
+}
+
+// ************************************************************************* //

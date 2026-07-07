@@ -1,0 +1,50 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Air as ideal gas, JANAF Cp, Sutherland viscosity. Heater-side ~2 bar, 740 K. |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      thermophysicalProperties;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+thermoType
+{
+    type            hePsiThermo;
+    mixture         pureMixture;
+    transport       sutherland;
+    thermo          janaf;
+    equationOfState perfectGas;
+    specie          specie;
+    energy          sensibleEnthalpy;
+}
+
+mixture
+{
+    specie
+    {
+        molWeight   28.96;
+    }
+    thermodynamics
+    {
+        // Tcommon raised above the operating+transient band (740-1033 K, wall
+        // 1033 K) so the whole domain uses ONE smooth coefficient set. The two
+        // JANAF sets are ~1% discontinuous in h at their join, and with the old
+        // Tcommon=1000 sitting inside the operating range the T(h) Newton
+        // inversion oscillated across that jump and failed to converge.
+        Tlow        200;
+        Thigh       2500;
+        Tcommon     1500;
+        highCpCoeffs ( 3.09 0.00124 -4.2e-7 6.7e-11 -3.9e-15 -996 5.34 );
+        lowCpCoeffs  ( 3.57 -7.2e-4 1.66e-6 -6.6e-10 5.1e-14 -1047 3.72 );
+    }
+    transport
+    {
+        As          1.458e-6;
+        Ts          110.4;
+    }
+}
+
+// ************************************************************************* //

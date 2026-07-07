@@ -1,0 +1,45 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Temperature. Bulk air 740 K; isothermal tube+fin wall at 1033 K.             |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       volScalarField;
+    object      T;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+dimensions      [0 0 0 1 0 0 0];
+
+internalField   uniform 740;
+
+boundaryField
+{
+    inlet
+    {
+        type            fixedValue;
+        value           uniform 740;
+    }
+    outlet
+    {
+        type            inletOutlet;
+        inletValue      uniform 740;
+        value           uniform 740;
+    }
+    tube
+    {
+        type            fixedValue;
+        value           uniform 1033;
+    }
+    "cyclic.*"
+    {
+        type            cyclic;
+    }
+    "symZ.*"
+    {
+        type            symmetryPlane;
+    }
+}
+
+// ************************************************************************* //

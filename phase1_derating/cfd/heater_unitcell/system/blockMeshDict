@@ -1,0 +1,88 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Background hex mesh for the finned-tube unit cell.                          |
+| Axis convention (resolves the plan typo):                                    |
+|   x = transverse pitch  S_T = 0.0508 m  -> cyclic (cyclicX_pos/neg)          |
+|   y = streamwise pitch  S_L = 0.04445 m -> inlet (front) / outlet (back)     |
+|   z = spanwise, tube axis, 3*fin_pitch = 0.012 m -> symmetryPlane (symZ_*)   |
+|       (z=0 and z=Lz are exact symmetry planes of the fin array at 2,6,10 mm;  |
+|        the tube axis lies along z so the wall crosses these planes -- symmetry |
+|        is layer-meshable where cyclic is not, and is physically identical here)|
+| Tube axis along z at x=0,y=0. Base cell ~ d0/20 = 1.27 mm.                    |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      blockMeshDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+scale   1;
+
+xmin   -0.0254;    xmax    0.0254;    // S_T/2
+ymin   -0.022225;  ymax    0.022225;  // S_L/2
+zmin    0.0;       zmax    0.012;     // 3 * fin_pitch
+
+vertices
+(
+    ($xmin $ymin $zmin)   // 0
+    ($xmax $ymin $zmin)   // 1
+    ($xmax $ymax $zmin)   // 2
+    ($xmin $ymax $zmin)   // 3
+    ($xmin $ymin $zmax)   // 4
+    ($xmax $ymin $zmax)   // 5
+    ($xmax $ymax $zmax)   // 6
+    ($xmin $ymax $zmax)   // 7
+);
+
+blocks
+(
+    hex (0 1 2 3 4 5 6 7) (40 34 9) simpleGrading (1 1 1)
+);
+
+edges
+(
+);
+
+boundary
+(
+    inlet
+    {
+        type patch;
+        faces ( (0 1 5 4) );          // y = ymin, flow enters +y
+    }
+    outlet
+    {
+        type patch;
+        faces ( (3 7 6 2) );          // y = ymax
+    }
+    cyclicX_neg
+    {
+        type cyclic;
+        neighbourPatch cyclicX_pos;
+        faces ( (0 4 7 3) );          // x = xmin
+    }
+    cyclicX_pos
+    {
+        type cyclic;
+        neighbourPatch cyclicX_neg;
+        faces ( (1 2 6 5) );          // x = xmax
+    }
+    symZ_neg
+    {
+        type symmetryPlane;
+        faces ( (0 3 2 1) );          // z = zmin (fin array symmetry plane)
+    }
+    symZ_pos
+    {
+        type symmetryPlane;
+        faces ( (4 5 6 7) );          // z = zmax (fin array symmetry plane)
+    }
+);
+
+mergePatchPairs
+(
+);
+
+// ************************************************************************* //

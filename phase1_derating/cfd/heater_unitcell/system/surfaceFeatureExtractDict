@@ -1,0 +1,28 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Extract sharp feature edges (fin edges, tube-fin junctions) for snappy.      |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      surfaceFeatureExtractDict;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+tube.stl
+{
+    extractionMethod    extractFromSurface;
+    extractFromSurfaceCoeffs
+    {
+        includedAngle   150;   // edges sharper than 180-150 = 30 deg
+    }
+    subsetFeatures
+    {
+        nonManifoldEdges    no;
+        openEdges           no;    // tube ends lie on symmetry planes; no feature
+    }
+    writeObj            no;
+}
+
+// ************************************************************************* //

@@ -1,0 +1,30 @@
+#!/usr/bin/env bash
+# Build, mesh, and solve the finned-tube heater unit cell.
+# Pipeline: blockMesh -> surfaceFeatureExtract (sharp fin edges) ->
+#           snappyHexMesh -overwrite -> checkMesh -> rhoSimpleFoam.
+# Run from anywhere: run/Allrun
+set -euo pipefail
+HERE="$(cd "$(dirname "$0")" && pwd)"
+cd "${HERE}/../heater_unitcell"
+
+# 1. Background hex mesh.
+../run/of.sh blockMesh 2>&1 | tee log.blockMesh
+
+# 2. Extract sharp feature edges from the STL (fin edges / tube-fin junctions).
+../run/of.sh surfaceFeatureExtract 2>&1 | tee log.surfaceFeatureExtract
+
+# 3. Castellate + snap + add boundary layers (carves the tube out of the box).
+../run/of.sh 'snappyHexMesh -overwrite' 2>&1 | tee log.snappyHexMesh
+
+# 4. Mesh quality report (gate: mesh OK, acceptable non-ortho/skewness).
+../run/of.sh checkMesh 2>&1 | tee log.checkMesh
+
+# 5. Initial fields, then steady compressible solve in parallel (10 cores).
+#    (The unit-cell mesh is ~0.9 M cells; serial is impractical.)
+rm -rf 0 processor*
+cp -r 0.orig 0
+../run/of.sh decomposePar 2>&1 | tee log.decomposePar
+../run/of.sh 'mpirun --allow-run-as-root -np 10 rhoSimpleFoam -parallel' 2>&1 | tee log.rhoSimpleFoam
+../run/of.sh reconstructPar -latestTime 2>&1 | tee log.reconstructPar
+
+# ************************************************************************* //

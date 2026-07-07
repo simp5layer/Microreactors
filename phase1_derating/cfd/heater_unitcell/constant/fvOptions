@@ -1,0 +1,24 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| Clip temperature to a physical band so early SIMPLE transients cannot drive   |
+| a cell outside the thermo range (inlet 740 K, isothermal wall 1033 K).        |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvOptions;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+limitT
+{
+    type            limitTemperature;
+    active          true;
+
+    selectionMode   all;
+    min             300;
+    max             1200;
+}
+
+// ************************************************************************* //

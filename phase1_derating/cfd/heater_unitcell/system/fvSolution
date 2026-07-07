@@ -1,0 +1,63 @@
+/*--------------------------------*- C++ -*----------------------------------*\
+| SIMPLE (consistent) for steady compressible flow.                            |
+\*---------------------------------------------------------------------------*/
+FoamFile
+{
+    version     2.0;
+    format      ascii;
+    class       dictionary;
+    object      fvSolution;
+}
+// * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * * //
+
+solvers
+{
+    p
+    {
+        solver          GAMG;
+        smoother        GaussSeidel;
+        tolerance       1e-8;
+        relTol          0.05;
+    }
+
+    "(U|e|h|k|omega)"
+    {
+        solver          PBiCGStab;
+        preconditioner  DILU;
+        tolerance       1e-8;
+        relTol          0.1;
+    }
+}
+
+SIMPLE
+{
+    nNonOrthogonalCorrectors 2;
+    consistent          yes;
+
+    residualControl
+    {
+        p               1e-4;
+        U               1e-4;
+        e               1e-4;
+        h               1e-4;
+        "(k|omega)"     1e-4;
+    }
+}
+
+relaxationFactors
+{
+    fields
+    {
+        p               0.3;
+        rho             0.05;
+    }
+    equations
+    {
+        U               0.5;
+        e               0.5;
+        h               0.5;
+        "(k|omega)"     0.5;
+    }
+}
+
+// ************************************************************************* //
