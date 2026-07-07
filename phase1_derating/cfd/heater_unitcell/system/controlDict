@@ -15,7 +15,7 @@ application     rhoSimpleFoam;
 startFrom       latestTime;
 startTime       0;
 stopAt          endTime;
-endTime         900;
+endTime         2000;
 deltaT          1;
 writeControl    timeStep;
 writeInterval   100;
@@ -51,6 +51,35 @@ functions
         fields          (U p T);
         writeControl    timeStep;
         writeInterval   50;
+    }
+
+    // Streamwise pressure-drop probes for the air-side friction factor (Task 6 f).
+    pIn
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      patch;
+        name            inlet;
+        operation       areaAverage;
+        fields          (p);
+        writeControl    timeStep;
+        writeInterval   1;
+        writeFields     false;
+        log             true;
+    }
+
+    pOut
+    {
+        type            surfaceFieldValue;
+        libs            (fieldFunctionObjects);
+        regionType      patch;
+        name            outlet;
+        operation       areaAverage;
+        fields          (p);
+        writeControl    timeStep;
+        writeInterval   1;
+        writeFields     false;
+        log             true;
     }
 }
 
