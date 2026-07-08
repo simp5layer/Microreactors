@@ -1,5 +1,6 @@
 """Generate an STL of a staggered-tube unit cell: a cylinder with n annular fins.
-Used as snappyHexMesh input. Axis = z (streamwise-vertical fin stack)."""
+Used as snappyHexMesh input. Axis = z = tube axis / spanwise (the fins stack
+along z at fin_pitch); crossflow is streamwise in y. z is cyclic/symmetry, not streamwise."""
 import numpy as np
 from stl import mesh as stlmesh
 from geometry.finned_tube import FinnedTube
