@@ -22,9 +22,16 @@ v1.5 assumed the heater UA scales as UA ~ mdot^0.6 anchored at
 UA_heater_des = 152.3491 kW/K, mdot_des = 54.3699 kg/s (from
 ``cycle_model.hx_entu_v1_5.size_design``). v2 keeps that 152.3491 magnitude
 (computed live so v2 == v1.5 at the design point exactly) but replaces the
-assumed 0.6 exponent with the Briggs-Young Re-exponent m = 0.681, modulated by
-the overall fin/surface efficiency eta_o. This CONFIRMS v1.5 with a slightly
-refined scaling: the effective exponent lands ~0.66-0.68 (steeper than 0.6).
+assumed 0.6 exponent with the CFD-validated Briggs-Young Nu law, modulated by
+the overall fin/surface efficiency eta_o. The result: the effective UA~mdot^n
+exponent lands n_air_effective ~= 0.45 -- SHALLOWER than v1.5's assumed 0.6,
+not steeper. Heat transfer alone scales steeper (h ~ Re^0.681), but the
+reference fin's low, h-sensitive efficiency (eta_fin ~= 0.53 at design) means
+eta_o FALLS as mdot rises (dln(eta_o)/dln(mdot) ~= -0.23), and that
+modulation dominates: 0.681 - 0.23 ~= 0.45. Practically this is second-order:
+the ambient-driven mdot range over 25-55 C is only ~4-5%, so the v2 curve
+stays essentially on top of v1.5 -- this CONFIRMS v1.5, for the subtler
+reason that the derating is robust to the exact UA scaling law used.
 
 PROPERTY MODEL (reused from ``validation.single_point_check`` for consistency)
 -----------------------------------------------------------------------------
@@ -137,7 +144,7 @@ def overall_surface_efficiency(h: float, ft: FinnedTube) -> float:
 # The anchored, CFD-validated Briggs-Young UA(mdot) law
 # --------------------------------------------------------------------------
 def ua_of_mdot(mdot: float, ft: FinnedTube, UA_des_kW: float, mdot_des: float,
-               Re_des: float, Pr: float, k_air: float, m: float = M_NU) -> float:
+               Re_des: float, Pr: float, k_air: float) -> float:
     """Air-side heater UA [kW/K] at mass flow ``mdot``.
 
     Re tracks mass flow linearly (Re = Re_des * mdot/mdot_des). The Briggs-Young
