@@ -105,5 +105,55 @@ and fixed by sizing the heater to an independent design approach with real heat-
   cycle_efficiency (net/absorbed) — they diverge ~2 pts once heat is shed. *(Note: v1's reported efficiency
   is cycle efficiency; slightly optimistic at high ambient — use plant efficiency for the fuel-to-electric claim.)*
 
+## 4d. CFD v2 — air-side UA validation (Option 1)
+`phase1_derating/cfd/` — a steady compressible `rhoSimpleFoam` + k-ω SST OpenFOAM solve of the
+staggered finned-tube heater unit cell (tube OD 25.4 mm, fin height 12 mm/thickness 0.5 mm/pitch
+4 mm, S_T=2.0·d₀, S_L=1.75·d₀; wall 1033 K, air inlet 740 K, ≈2 bar), 3.29M cells, checkMesh OK,
+SIMPLE converged in 464 iterations, y⁺ mean 0.244/max 4.63, design point Re = 8368.
+
+**Path taken — Option 1:** a single validated CFD point (not a multi-point Re sweep), because the
+point validated heat transfer and the sensitivity analysis below shows the result is second-order
+in the air-side law anyway. See `phase1_derating/cfd/README.md` and DECISIONS_LOG D12.
+
+**Validation result (Re = 8368):**
+| Quantity | CFD | Correlation | Deviation | Verdict |
+|---|---|---|---|---|
+| Nu (LMTD) | 45.9 | 54.1 (Briggs–Young) | −15.2% | within ±20% → **heat transfer VALIDATED** |
+| f | 1.688 | 0.287 (Robinson–Briggs) | +489% | outside ±20% → **friction does NOT validate** |
+
+The friction miss is a measurement-domain mismatch (CFD Δp spans the whole unit cell — inlet +
+outlet + wake, ≈1.7 velocity heads — vs the correlation's per-row bundle loss), compounded by fin
+clipping (below); not a Reynolds-dependence problem a sweep would fix. Friction is therefore kept
+**informational only** and is not wired into the v2 power balance.
+
+**UA(ṁ) law adopted:** the now-CFD-validated Briggs–Young Nu(Re) law, converted to heater UA and
+anchored to v1.5's design magnitude — **UA = 152.35 kW/K at ṁ_des = 54.37 kg/s** (v2 == v1.5 exactly
+at the design point). The raw Nu scaling (Re^0.681) is steeper than v1.5's assumed exponent, but
+UA = h·A·η_o and the reference fin is thermally inefficient (η_fin ≈ 0.53 at design, realistic for a
+low-conductivity k ≈ 25 W/m·K high-temperature alloy): overall surface efficiency η_o falls
+0.62→0.54 as ṁ rises (dln η_o/dln ṁ ≈ −0.23), so the net effective exponent is
+**n_air_effective = 0.454 — SHALLOWER than v1.5's assumed 0.6**, not steeper.
+
+**v2 curve** (`results/derating_curve_v2.csv`, this UA law injected into v1.5's regime-B cycle):
+| Ambient | v2 net MWe (% of 25 °C) | Regime |
+|---:|:---:|:---:|
+| 25 °C | 5.000 (100.0%) | B |
+| 35 °C | 4.926 (98.5%) | B |
+| 45 °C | 4.852 (97.1%) | A |
+| 55 °C | 4.566 (91.3%) | A |
+
+Mean derating 0.15%/°C (25–45 °C); penalty at 55 °C = **−8.7%** vs v1.5's −8.8% (assumed UA∝ṁ⁰·⁶)
+— a **+0.08-point delta that CONFIRMS v1.5**. Reason: the open-air Brayton's ambient-driven air
+mass flow varies only ~4–5% over 25→55 °C, so even the 0.6→0.454 exponent change is second-order —
+the desert penalty is dominated by compressor-inlet thermodynamics, and the CFD's job (confirming
+the air-side heat-exchanger law doesn't change that) is done.
+
+**Limitations (full detail in `phase1_derating/cfd/README.md`):** fin clipping (reference fin
+outer radius 24.7 mm > S_L/2 = 22.2 mm, so fins overrun the single-tube box and are clipped at
+inlet/outlet, ~42% of the inlet plane at fin z-levels — inherent to fin height ≈ tube radius plus a
+single-tube domain); friction not validated/not used; mesh independence not formally studied (single
+validated point + adequacy evidence, not a 3-level grid-convergence study); localized ω bounding at
+fin tips (does not perturb converged bulk fields); Option 1 chosen over a full 6-point CFD sweep.
+
 ## 5. Comparators (for cross-class sensitivity, from same ARIS catalogue)
 USNC MMR (HTGR, molten-salt store), MARVEL (INL), Oklo Aurora — datasheets in the same PDF; extract later.

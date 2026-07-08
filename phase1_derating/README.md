@@ -13,6 +13,10 @@ results/      derating_curve_v1.csv        THE interface artifact (schema below)
               derating_curve_v1.png        figure
               derating_curve_v1_5.csv      v1.5 curve + regime flag + both efficiencies
               derating_curve_v1_vs_v1_5.png   v1 vs v1.5 comparison (the two control-strategy bounds)
+              derating_curve_v2.csv        v2 curve (CFD-validated air-side UA law injected into v1.5)
+              derating_curve_v1_5_vs_v2.png   v1.5 vs v2 comparison (confirms v1.5)
+cfd/          OpenFOAM heater-unitcell CFD campaign (Option 1: single-point validation, not a full
+              sweep) — see `cfd/README.md`
 refs/         (papers / benchmark data)
 ```
 
@@ -23,10 +27,18 @@ refs/         (papers / benchmark data)
   (`hx_entu_v1_5.py`). Shows the derating is **control-strategy-dependent**, bracketed by v1 fixed-TIT
   (−17.7% @55 °C, conservative baseline = the interface) and regime-B floating-TIT (−8.8%, optimistic).
   B→A crossover set by heat-pipe headroom. Sizes UA_heater≈152 / UA_recup≈401 kW/K for the CFD.
-- **v2 (next):** v1 corrected by OpenFOAM air-side results — for the OPEN-AIR Brayton this narrows to the
-  heat-pipe→air heat exchanger and intake/exhaust recirculation, NOT a closed condenser (see A1 §3).
+- **v2 (done, Option 1 — CFD validation-driven, not a full sweep):** OpenFOAM (`rhoSimpleFoam` + k-ω SST)
+  solve of the staggered finned-tube heater unit cell (3.29M cells, converged, y⁺ mean 0.244) at the
+  design Reynolds number, Re=8368. **Heat transfer validated** (Nu −15.2% vs Briggs–Young, within ±20%);
+  **friction did not** (+489%, informational only, not wired into the power balance). The CFD-validated
+  Nu(Re) law gives air-side UA scaling exponent n_air=0.454 (shallower than v1.5's assumed 0.6, from
+  fin-efficiency modulation). Injected into v1.5: **penalty @55 °C = −8.7% vs v1.5's −8.8% (+0.08 pt) —
+  v2 CONFIRMS v1.5**, because the ambient-driven mass-flow range (25–55 °C) is only ~4–5%, making the
+  exact UA exponent second-order. See `cfd/README.md`, A1 spec §4d, DECISIONS_LOG D12 for full detail
+  and honest limitations (fin clipping, friction non-validation, no formal mesh-independence study).
 - Refinements: CoolProp variable air properties; compressor map instead of similarity; site-pressure
-  (elevation) per Phase-2 site; CHP heat path.
+  (elevation) per Phase-2 site; CHP heat path; full CFD Reynolds sweep + friction-domain fix (future
+  extension beyond Option 1).
 
 ## Interface schema (`derating_curve_v1.csv`)
 `ambient_temp_C, net_MWe, net_efficiency, heat_rejection_capacity_frac, mdot_frac, w_net_kJkg, q_cycle_MW, TIT_C, net_MWe_frac_vs25C`
@@ -40,3 +52,6 @@ dominant remaining uncertainty is the compressor mass-flow law (∝p/√T vs ∝
 ## Reproduce
 `python3 cycle_model/derating_v1.py` then `python3 cycle_model/hx_entu_v1_5.py`  (numpy, pandas, matplotlib, scipy)
 (run v1 first — v1.5's comparison plot reads `derating_curve_v1.csv`)
+For v2: the OpenFOAM CFD case itself is not re-run by default (see `cfd/README.md` for `run/of.sh`/
+`run/Allrun`); `cd cfd && python3 -m postprocessing.fit && python3 cfd_to_v2.py` regenerates
+`derating_curve_v2.csv` from the frozen, already-converged CFD validation numbers.

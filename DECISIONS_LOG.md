@@ -127,6 +127,60 @@ component sizing (UA) for the CFD and the crossover-vs-headroom sensitivity.
 **Lesson:** the adversarial workflow converted a plausible-but-wrong "regime transition" claim into a
 correct, defensible bracket — worth the cost. Verify coupled-physics models before trusting them.
 
+## D12 — CFD v2 (air-side UA), Option-1 validation-driven (2026-07-08)
+**What the CFD found:** a steady compressible OpenFOAM (`rhoSimpleFoam` + k-ω SST) solve of the
+staggered finned-tube heater unit cell (3.29M cells, checkMesh OK, converged 464 iterations, y⁺
+mean 0.244) at the cycle design point (Re = 8368) against published correlations:
+- **Heat transfer VALIDATED:** Nu_CFD(LMTD) = 45.9 vs Briggs–Young 54.1 → **−15.2%, within ±20%.**
+- **Friction did NOT validate:** f_CFD = 1.688 vs Robinson–Briggs 0.287 → **+489%.** Root cause is
+  a measurement-domain mismatch (CFD Δp spans the whole unit cell — inlet + tube bundle + outlet
+  wake, ≈1.7 velocity heads — vs the correlation's per-row bundle loss), compounded by fin clipping
+  (below); not a Reynolds-dependence issue a sweep would fix.
+- **Air-side UA exponent refined:** the CFD-validated Briggs–Young Nu(Re) law, converted to heater
+  UA and modulated by the reference fin's overall surface efficiency (η_fin ≈ 0.53 — realistic for
+  a low-conductivity, k ≈ 25 W/m·K, high-temperature alloy fin), gives
+  **n_air_effective = 0.454 — SHALLOWER than v1.5's assumed 0.6**, not steeper as first anticipated
+  (raw Nu ∝ Re^0.681 is steeper, but η_o *falls* as ṁ rises — dln η_o/dln ṁ ≈ −0.23 — and that
+  modulation dominates: 0.681 − 0.23 ≈ 0.454).
+
+**Decision — Option 1 (single-point validation + correlation-driven curve), not a full CFD sweep.**
+Once the single point validated heat transfer (within the plan's own ±20% risk gate), the
+information a 6-point Reynolds sweep would add is a refined Nu(Re) *shape* the sensitivity below
+shows is already second-order to the derating result. Running 5 more ~25-minute, 3.29M-cell parallel
+solves to move the answer by hundredths of a percentage point was not worth the compute against the
+project timeline. **Why this is legitimate and not corner-cutting:** the ±20% single-point gate was
+the plan's own documented decision criterion for when CFD confirms the assumed model is usable
+as-is; it was met. A fully CFD-derived Nu(Re) correlation and a friction-domain fix (dedicated Δp
+planes bracketing the bundle, or a multi-row domain) are recorded as a documented future extension,
+not silently dropped.
+
+**Result: v2 CONFIRMS v1.5.** Injecting the CFD-validated UA(ṁ) law into the v1.5 cycle model
+(`cfd_to_v2.py` → `derating_curve_v2.csv`) gives penalty at 55 °C = **−8.7%** vs v1.5's **−8.8%**
+(assumed UA ∝ ṁ⁰·⁶) — a **+0.08-point delta**. The KEY INSIGHT is *why* the exponent change (0.6 →
+0.454) barely moves the curve: the open-air Brayton's ambient-driven air mass flow varies only
+~4–5% over the full 25→55 °C range, so even a materially different UA-scaling exponent is a
+second-order effect. The desert thermal penalty remains dominated by compressor-inlet
+thermodynamics (v1/v1.5's finding); the CFD's role was to confirm the air-side heat-exchanger
+assumption doesn't change that conclusion, and it did.
+
+**Limitations (documented, not hidden):**
+1. **Fin clipping.** Reference fin outer radius (24.7 mm) exceeds S_L/2 (22.2 mm), so the 12 mm
+   fins overrun the single-tube streamwise unit-cell box and are clipped at inlet/outlet (~42% of
+   the inlet plane is fin metal at fin z-levels). Inherent to the reference geometry (fin height ≈
+   tube radius) combined with a single-tube box — one cell cannot represent staggered neighboring
+   tubes' interleaving fins. Biases the friction measurement; heat transfer still validates (−15.2%).
+2. **Friction not validated, not used.** The air-side Δp/parasitic-power estimate is informational
+   only in `cfd_correlation.json` and is not wired into the v2 power balance.
+3. **Mesh independence not formally studied.** A single validated point stands in for a
+   grid-convergence study, supported by adequacy evidence (−15.2% Nu agreement, y⁺ mean 0.244,
+   clean checkMesh) rather than a formal 3-level grid-convergence study (future work).
+4. **ω bounding at fin tips** — a localized near-singular-corner artifact in the k-ω solve; does
+   not perturb the converged U/p/T fields (integrated h/f are bulk-dominated).
+**Consequence:** the Phase-2 interface can stay on v1 (per D11's conservative choice) with v1.5/v2
+as the documented optimistic-bound refinement; the CFD chapter closes as validation-of-assumption
+rather than an independent full-sweep correlation, and that scope choice — with its reasoning — is
+explicit for the thesis/paper rather than presented as more than it is.
+
 ## Open decisions (not yet made)
 - **DP1 MELCOR access** (Sandia/CSARP) — longest external lead time; ask if KACST holds a license.
 - **DP2 stream assignment**, **DP3 journal target**, **DP4 site-pool final count** (see RESEARCH_OBJECTIVES.md).
