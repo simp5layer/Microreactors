@@ -1,0 +1,27 @@
+{
+  "C_nu": 0.13059191059307285,
+  "m": 0.681,
+  "C_f": 4.9781251700823255,
+  "p": -0.316,
+  "Re_des": 8368,
+  "Pr": 0.69,
+  "k_air_des": 0.061132758386707106,
+  "UA_design_kW_per_K": 152.34911328757227,
+  "mdot_des_kg_s": 54.369882827152196,
+  "n_air_effective": 0.4538794922740954,
+  "v1_5_assumed_n_air": 0.6,
+  "n_air_effective_note": "Effective UA~mdot^n from a log-log fit of the anchored Briggs-Young law over mdot=0.7-1.3*mdot_des. It is BELOW the raw Re-exponent m=0.681 AND below v1.5's assumed 0.6 because the REFERENCE fin (0.5 mm thick, 12 mm tall, k_fin=25) has a low, h-sensitive fin efficiency (~0.53 at design): eta_o swings ~0.62->0.54 across the range, giving dln(eta_o)/dln(mdot) ~ -0.23. Finding: including fin efficiency, the air-side UA scaling is SHALLOWER than v1.5's 0.6, not the steeper 0.66-0.68 originally anticipated.",
+  "n_tubes": 1281.447255643439,
+  "n_tubes_is_diagnostic": true,
+  "L_tube_m": 2.0,
+  "notes": "Option 1: air-side law = CFD-VALIDATED Briggs-Young Nu (no CFD sweep fit). UA anchored to v1.5 152.3491 kW/K @ mdot_des; exponent m=0.681 modulated by overall surface efficiency -> n_air_effective. Friction did NOT validate (+488.7%); C_f/p and dp_of_mdot are informational only and NOT wired into the v2 power balance. n_tubes is a diagnostic count for L_tube_m.",
+  "validation": {
+    "Re": 8368,
+    "Nu_cfd": 45.9,
+    "Nu_by": 54.1,
+    "Nu_dev_pct": -15.2,
+    "f_cfd": 1.688,
+    "f_rb": 0.287,
+    "f_dev_pct": 488.7
+  }
+}
