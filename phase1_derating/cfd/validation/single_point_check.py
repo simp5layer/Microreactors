@@ -14,12 +14,13 @@ import math
 
 from geometry.finned_tube import REFERENCE, min_flow_area_per_pitch
 from correlations.finned_tube_corr import briggs_young_nu, briggs_young_f
+from postprocessing.extract import A_WETTED_CFD_MEASURED
 
 # --------------------------------------------------------------------------
 # MEASURED CFD values (converged case, Time 466)
 # --------------------------------------------------------------------------
 Q        = 256.30      # wallHeatFlux integral over `tube` patch (W)
-A_WETTED = 9.0165e-3   # actual tube patch area (m^2); 329016 faces, fins clipped
+A_WETTED = A_WETTED_CFD_MEASURED  # actual tube patch area (m^2); 329016 faces, fins clipped
 DP       = 148.4       # p_in - p_out = 200148.4 - 200000.0 (Pa)
 T_WALL   = 1033.0      # isothermal tube wall temperature (K)
 T_IN     = 740.0       # air inlet temperature (K)

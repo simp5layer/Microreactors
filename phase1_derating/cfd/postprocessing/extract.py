@@ -11,13 +11,15 @@ converged step). Header lines beginning with ``#`` are skipped.
 from __future__ import annotations
 from pathlib import Path
 
-from geometry.finned_tube import FinnedTube
+from geometry.finned_tube import FinnedTube, air_area_per_pitch
 
-# Actual wetted area of the CFD `tube` patch (m²): 329016 faces. The fins are
-# clipped by the streamwise domain boundary, so this is below the analytical
-# 3 x air_area_per_pitch = 9.530e-3 m². Use this for the real converged case;
-# callers may override for testing or other meshes.
-A_WETTED_CFD = 9.0165e-3
+# Actual MEASURED wetted area of the CFD `tube` patch (m²) for the converged
+# heater-unitcell mesh: 329016 faces, 3-fin-pitch domain. This is 0.946x the
+# analytical 3 * air_area_per_pitch(REFERENCE) = 9.530e-3 m² because the fins
+# are clipped by the streamwise domain boundary in this mesh. This constant is
+# specific to that mesh/geometry -- it is NOT derived from an arbitrary `ft`,
+# so callers using a different geometry must not rely on it implicitly.
+A_WETTED_CFD_MEASURED = 9.0165e-3
 
 
 def _is_number(s: str) -> bool:
@@ -48,7 +50,7 @@ def _last_data_row(dat_path: Path) -> list[str]:
 
 
 def extract_h(case_dir, ft: FinnedTube, T_wall: float = 1033.0,
-              T_bulk: float = 740.0, A_wetted: float = A_WETTED_CFD) -> float:
+              T_bulk: float = 740.0, A_wetted: float | None = None) -> float:
     """Convective coefficient h = q''_avg / (T_wall - T_bulk).
 
     Parses ``wallHeatFlux1/<latest>/wallHeatFlux.dat`` (columns
@@ -56,9 +58,14 @@ def extract_h(case_dir, ft: FinnedTube, T_wall: float = 1033.0,
     heat rate Q [W] over the tube patch. q''_avg = |Q| / A_wetted, so the sign
     convention of the wall-flux output does not affect the returned coefficient.
 
-    ``ft`` is accepted for interface symmetry; ``A_wetted`` defaults to the
-    measured tube-patch area of the converged case.
+    ``A_wetted`` defaults to the analytical, unclipped air-side area of the
+    3-fin-pitch domain for ``ft`` (``3 * air_area_per_pitch(ft)``), so the
+    result stays correct if ``extract_h`` is ever called against a different
+    geometry. Pass ``A_wetted`` explicitly to use a measured value instead
+    (e.g. ``A_WETTED_CFD_MEASURED`` for this mesh's real, fin-clipped area).
     """
+    if A_wetted is None:
+        A_wetted = 3.0 * air_area_per_pitch(ft)
     row = _last_data_row(
         _latest_pp_dir(case_dir, "wallHeatFlux1") / "wallHeatFlux.dat")
     Q = float(row[-1])                       # integral column = heat rate (W)

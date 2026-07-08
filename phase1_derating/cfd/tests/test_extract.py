@@ -4,7 +4,7 @@ Synthetic fixtures mimic the ESI wallHeatFlux and surfaceFieldValue .dat formats
 so the parsing/derivation is exercised without a live OpenFOAM run.
 """
 import pytest
-from geometry.finned_tube import REFERENCE
+from geometry.finned_tube import REFERENCE, air_area_per_pitch
 from postprocessing.extract import extract_h, extract_dp_and_f
 
 
@@ -38,6 +38,19 @@ def test_extract_h_uses_last_row_and_latest_dir(tmp_path):
     h = extract_h(str(tmp_path), REFERENCE, T_wall=1033.0, T_bulk=740.0,
                   A_wetted=9.0165e-3)
     assert h == pytest.approx((256.30 / 9.0165e-3) / 293.0)
+
+
+def test_extract_h_default_area_derived_from_ft(tmp_path):
+    # No A_wetted passed -> should derive from ft via 3 * air_area_per_pitch(ft),
+    # the analytical unclipped 3-fin-pitch domain area, NOT the CFD-measured area.
+    d = tmp_path / "postProcessing/wallHeatFlux1/0"
+    _write(d / "wallHeatFlux.dat",
+           "# Wall heat-flux\n"
+           "# Time  patch  min  max  integral\n"
+           "3000 tube -5e4 -1e4 -30000\n")
+    h = extract_h(str(tmp_path), REFERENCE, T_wall=1033.0, T_bulk=740.0)
+    A_expected = 3.0 * air_area_per_pitch(REFERENCE)
+    assert h == pytest.approx((30000 / A_expected) / (1033.0 - 740.0))
 
 
 def test_extract_dp_and_f(tmp_path):
