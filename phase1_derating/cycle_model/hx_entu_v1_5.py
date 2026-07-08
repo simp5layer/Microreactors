@@ -106,7 +106,11 @@ def size_design(p):
 def solve_state(T1_K, p, dz):
     mdot = dz["mdot_des"] * mass_flow_factor(T1_K, p["mdot_law"])
     scale = (mdot / dz["mdot_des"]) ** p["n_air"]
-    UA_heater, UA_recup = dz["UA_heater"] * scale, dz["UA_recup"] * scale
+    UA_recup = dz["UA_recup"] * scale
+    # Heater UA: optional injected CFD-validated law UA_heater(mdot) [kW/K];
+    # falls back to the assumed UA_des*(mdot/mdot_des)^n_air when not injected.
+    ua_law = p.get("ua_law")
+    UA_heater = ua_law(mdot) if ua_law is not None else dz["UA_heater"] * scale
     C = mdot * CP
     T2, w_c = compressor(T1_K, p)
     eps_r = (UA_recup / C) / (1.0 + UA_recup / C)
