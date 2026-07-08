@@ -70,7 +70,9 @@ Staggered finned-tube unit cell (single tube, 3 fin pitches spanwise), steady co
   a streamwise-cyclic bundle, was used).
 - **Mesh:** 3.29M cells; `checkMesh` OK (max non-orthogonality 64.8, max skewness 3.05).
 - **Convergence:** SIMPLE converged in 464 iterations, all residuals < 1e-4; y⁺ mean 0.244, max 4.63
-  on the tube wall (well-resolved boundary layer); temperature field physical (limiter dormant).
+  on the tube wall (well-resolved boundary layer; mean satisfies the plan's y⁺≤2 mesh gate, but the
+  max exceeds it at the fin leading-edge tips — see Limitations #6); temperature field physical
+  (limiter dormant).
 - **Design point:** Re = 8368 (tube-OD, minimum-flow-section mass flux).
 
 ## Validation — CFD vs published correlations (Re = 8368)
@@ -79,6 +81,12 @@ Staggered finned-tube unit cell (single tube, 3 fin pitches spanwise), steady co
 |---|---|---|---|---|
 | Nu (heat transfer, LMTD) | 45.9 | 54.1 (Briggs–Young) | **−15.2%** | within ±20% → **air-side heat-transfer model VALIDATED** |
 | f (friction) | 1.688 | 0.287 (Robinson–Briggs) | **+489%** | outside ±20% → **does NOT validate** |
+
+Nu is computed using the LMTD (log-mean temperature difference) — the standard mean driving ΔT for
+an integrated heat-exchanger balance with air-side bulk warming — not the simpler wall-minus-inlet
+ΔT, which understates h and gives Nu = 40.3 (**−25.5%**, outside ±20%) for the same CFD run; the ΔT
+convention is therefore material, and LMTD is the physically correct choice for comparison against
+the Briggs–Young correlation (itself LMTD-based).
 
 The friction miss is not a Reynolds-dependence issue a sweep would resolve: the CFD Δp is measured
 across the whole unit-cell domain (inlet plenum + tube bundle + outlet wake, ≈1.7 velocity heads),
@@ -145,6 +153,12 @@ exchanger law — the CFD's role was to confirm that assumption was safe, which 
    curve, not a 6-point CFD Reynolds sweep. It was the efficient path once the single point validated
    heat transfer; a fully CFD-derived Nu(Re) correlation and a friction-domain fix (dedicated
    Δp planes bracketing the bundle, or a multi-row domain) remain a documented future extension.
+6. **y⁺ gate exceedance at fin leading-edge tips.** The plan's mesh-quality gate is y⁺ ≤ 2 on
+   tube+fin walls. The mean y⁺ (0.244) satisfies the wall-resolved intent of that gate, but the max
+   (4.63) exceeds it — localized at the fin leading-edge tips, the same near-singular corners
+   responsible for the localized ω-bounding artifact (#4). The k-ω SST blended wall functions
+   (nutUSpalding/omega) remain valid at these y⁺ values, and the integrated h is bulk-dominated, so
+   this does not compromise the −15.2% heat-transfer validation.
 
 See `phase1_derating/spec/A1_reference_spec_sheet.md` §4d for the numbers in spec-sheet form and
 `DECISIONS_LOG.md` D12 for the full why/consequence of the Option-1 choice.

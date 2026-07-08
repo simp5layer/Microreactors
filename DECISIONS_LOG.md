@@ -130,8 +130,13 @@ correct, defensible bracket — worth the cost. Verify coupled-physics models be
 ## D12 — CFD v2 (air-side UA), Option-1 validation-driven (2026-07-08)
 **What the CFD found:** a steady compressible OpenFOAM (`rhoSimpleFoam` + k-ω SST) solve of the
 staggered finned-tube heater unit cell (3.29M cells, checkMesh OK, converged 464 iterations, y⁺
-mean 0.244) at the cycle design point (Re = 8368) against published correlations:
+mean 0.244, max 4.63) at the cycle design point (Re = 8368) against published correlations:
 - **Heat transfer VALIDATED:** Nu_CFD(LMTD) = 45.9 vs Briggs–Young 54.1 → **−15.2%, within ±20%.**
+  Nu is computed using the LMTD (log-mean temperature difference) — the standard mean driving ΔT
+  for an integrated heat-exchanger balance with air-side bulk warming — not the simpler
+  wall-minus-inlet ΔT, which understates h and gives Nu_CFD(inlet) = 40.3 (**−25.5%**, outside
+  ±20%) for the same CFD run; the ΔT convention is material, and LMTD is the physically correct
+  choice against the LMTD-based Briggs–Young correlation.
 - **Friction did NOT validate:** f_CFD = 1.688 vs Robinson–Briggs 0.287 → **+489%.** Root cause is
   a measurement-domain mismatch (CFD Δp spans the whole unit cell — inlet + tube bundle + outlet
   wake, ≈1.7 velocity heads — vs the correlation's per-row bundle loss), compounded by fin clipping
@@ -176,10 +181,21 @@ assumption doesn't change that conclusion, and it did.
    clean checkMesh) rather than a formal 3-level grid-convergence study (future work).
 4. **ω bounding at fin tips** — a localized near-singular-corner artifact in the k-ω solve; does
    not perturb the converged U/p/T fields (integrated h/f are bulk-dominated).
+5. **y⁺ gate exceedance at fin leading-edge tips.** The plan's mesh gate is y⁺ ≤ 2 on tube+fin
+   walls. The mean y⁺ (0.244) satisfies the wall-resolved intent of that gate, but the max (4.63)
+   exceeds it at the fin leading-edge tips — the same near-singular corners behind the ω-bounding
+   artifact (#4). The k-ω SST blended wall functions (nutUSpalding/omega) remain valid at these y⁺
+   values, and the integrated h is bulk-dominated, so this does not compromise the −15.2%
+   heat-transfer validation.
 **Consequence:** the Phase-2 interface can stay on v1 (per D11's conservative choice) with v1.5/v2
 as the documented optimistic-bound refinement; the CFD chapter closes as validation-of-assumption
 rather than an independent full-sweep correlation, and that scope choice — with its reasoning — is
 explicit for the thesis/paper rather than presented as more than it is.
+**Lesson:** a single validated point plus a well-chosen ΔT convention (LMTD) was enough to confirm
+the coupled model — but confirming that required disclosing which gates were and weren't met (y⁺
+max exceeding the gate at the fin tips, friction not validating) rather than reporting only the
+numbers that look clean. Honest disclosure of partial gate compliance is worth more to the thesis
+than a scorecard that hides it.
 
 ## Open decisions (not yet made)
 - **DP1 MELCOR access** (Sandia/CSARP) — longest external lead time; ask if KACST holds a license.

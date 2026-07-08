@@ -109,7 +109,9 @@ and fixed by sizing the heater to an independent design approach with real heat-
 `phase1_derating/cfd/` — a steady compressible `rhoSimpleFoam` + k-ω SST OpenFOAM solve of the
 staggered finned-tube heater unit cell (tube OD 25.4 mm, fin height 12 mm/thickness 0.5 mm/pitch
 4 mm, S_T=2.0·d₀, S_L=1.75·d₀; wall 1033 K, air inlet 740 K, ≈2 bar), 3.29M cells, checkMesh OK,
-SIMPLE converged in 464 iterations, y⁺ mean 0.244/max 4.63, design point Re = 8368.
+SIMPLE converged in 464 iterations, y⁺ mean 0.244/max 4.63, design point Re = 8368. The mean y⁺
+satisfies the plan's y⁺≤2 mesh gate, but the max exceeds it at the fin leading-edge tips (see
+Limitations below).
 
 **Path taken — Option 1:** a single validated CFD point (not a multi-point Re sweep), because the
 point validated heat transfer and the sensitivity analysis below shows the result is second-order
@@ -120,6 +122,11 @@ in the air-side law anyway. See `phase1_derating/cfd/README.md` and DECISIONS_LO
 |---|---|---|---|---|
 | Nu (LMTD) | 45.9 | 54.1 (Briggs–Young) | −15.2% | within ±20% → **heat transfer VALIDATED** |
 | f | 1.688 | 0.287 (Robinson–Briggs) | +489% | outside ±20% → **friction does NOT validate** |
+
+Nu is computed using the LMTD (log-mean temperature difference) — the standard mean driving ΔT for
+an integrated heat-exchanger balance with air-side bulk warming — not the simpler wall-minus-inlet
+ΔT, which understates h and gives Nu = 40.3 (−25.5%, outside ±20%) for the same CFD run; LMTD is
+therefore the physically correct choice for comparison against the LMTD-based Briggs–Young correlation.
 
 The friction miss is a measurement-domain mismatch (CFD Δp spans the whole unit cell — inlet +
 outlet + wake, ≈1.7 velocity heads — vs the correlation's per-row bundle loss), compounded by fin
@@ -153,7 +160,11 @@ outer radius 24.7 mm > S_L/2 = 22.2 mm, so fins overrun the single-tube box and 
 inlet/outlet, ~42% of the inlet plane at fin z-levels — inherent to fin height ≈ tube radius plus a
 single-tube domain); friction not validated/not used; mesh independence not formally studied (single
 validated point + adequacy evidence, not a 3-level grid-convergence study); localized ω bounding at
-fin tips (does not perturb converged bulk fields); Option 1 chosen over a full 6-point CFD sweep.
+fin tips (does not perturb converged bulk fields); y⁺ gate exceedance (mean 0.244 satisfies the
+plan's y⁺≤2 gate, but max 4.63 exceeds it at the fin leading-edge tips — the same near-singular
+corners behind the ω-bounding artifact; k-ω SST blended wall functions remain valid there and the
+integrated h is bulk-dominated, so it does not compromise the −15.2% validation); Option 1 chosen
+over a full 6-point CFD sweep.
 
 ## 5. Comparators (for cross-class sensitivity, from same ARIS catalogue)
 USNC MMR (HTGR, molten-salt store), MARVEL (INL), Oklo Aurora — datasheets in the same PDF; extract later.
