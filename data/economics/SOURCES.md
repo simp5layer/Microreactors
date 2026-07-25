@@ -12,7 +12,7 @@
 ## IAEA DEEP (Desalination Economic Evaluation Program) — REQUEST ACCESS
 - **Source:** https://nucleus.iaea.org/Pages/deep.aspx
 - **Barrier:** distributed by IAEA on request (not an open direct download). Register on IAEA NUCLEUS
-  or request via the desalination programme page. Dr. Alzahrani / KACST may already have it.
+  or request via the desalination programme page. Dr. Alshehri / KACST may already have it.
 - **Fallback:** DEEP's methodology is published (IAEA-TECDOC series); a transparent LCOW/LCOE
   spreadsheet implementing the same annualised-cost method is an acceptable substitute and keeps the
   toolchain fully open.

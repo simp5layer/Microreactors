@@ -28,7 +28,7 @@ OpenMC (neutronics/decay heat) → OpenFOAM (CFD/air-cooling) + MELCOR (safety) 
 
 ## Context & people
 
-- Students: **Omar and Saud** — both Nuclear Engineering, King Abdulaziz University, same KACST co-op. Two parallel workstreams (A: physics/derating, B: data/siting) coupled only through the derating-curve interface; stream assignment still open (DP2). Supervisor: Dr. Salman Alzahrani, KACST Nuclear Technologies Institute. Co-operative Training Program, 2026.
+- Students: **Omar and Saud** — both Nuclear Engineering, King Abdulaziz University, same KACST co-op. Two parallel workstreams (A: physics/derating, B: data/siting) coupled only through the derating-curve interface; stream assignment still open (DP2). Supervisor: Dr. Salman Alshehri, KACST Nuclear Technologies Institute. Co-operative Training Program, 2026.
 - `RESEARCH_OBJECTIVES.md` in this directory is the working roadmap: RQ1–RQ5, objectives O1–O7, work packages A1–A5/B1–B6, milestones M0–M8, decision points (DP1 MELCOR access, DP2 stream assignment, DP3 journal, DP4 site-pool cap). Site pool committed at 30–80; OpenMC scoped as a bounded package (KRUSTY validation + decay heat + temperature coefficients — no depletion).
 - Background research pipeline that produced this direction lives in `../reports/` (01 entities & priorities, 02 journal hotspots, 03 convergence synthesis, 04 novel methods). An earlier siting draft (`Microreactor_Siting_Proposal_1.docx`) is also in `../reports/`.
 

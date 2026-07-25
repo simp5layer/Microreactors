@@ -2,7 +2,7 @@
 
 **Type:** Internal working roadmap (reformat later for KACST / KAU committee as needed)
 **Team:** Omar & Saud — Nuclear Engineering, King Abdulaziz University; KACST Co-operative Training Program 2026
-**Supervisor:** Dr. Salman Alzahrani, KACST Nuclear Technologies Institute
+**Supervisor:** Dr. Salman Alshehri, KACST Nuclear Technologies Institute
 **Status:** v1 — objectives locked; stream assignment and calendar dates deliberately open
 **Source proposals:** `Microreactor_Desert_Cogeneration_Proposal.pdf` (Phase 1) + `Microreactor_Siting_Proposal_2.docx` (Phase 2)
 
@@ -156,7 +156,7 @@ All open/unlicensed except MELCOR (agreement-gated, DP1).
 
 ## 11. First actions (this week, regardless of stream assignment)
 
-1. Ask Dr. Alzahrani whether KACST holds a MELCOR license → else start CSARP paperwork (only long-lead item).
+1. Ask Dr. Alshehri whether KACST holds a MELCOR license → else start CSARP paperwork (only long-lead item).
 2. Write the NASA POWER extraction script for the initial 16 sites (an afternoon; produces real data immediately).
 3. Commit `derating_curve_v0.csv` (placeholder) + this document to a shared repo — the interface exists from day 1.
 4. Begin A1 spec sheet and B1 site-pool expansion in parallel.
